@@ -1,0 +1,46 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="card border-0 shadow-lg">
+        <div class="card-header bg-dark text-white text-center">
+          <h1 class="m-0">Shopping Cart</h1>
+        </div>
+        <div class="card-body p-4">
+          <div id="cart-items">
+            <% if @cart_items.present? && @cart_items.any? %>
+              <ul class="list-group mb-4">
+                <% total_price = 0 %>
+                <% @cart_items.each do |item| %>
+                  <% quantity = session[:cart][item.id.to_s] %>
+                  <% quantity = quantity.is_a?(Array) ? quantity.first : quantity %>
+                  <% quantity = quantity.is_a?(Numeric) ? quantity : 1 %>
+                  <% subtotal = item.price * quantity %>
+                  <% total_price += subtotal %>
+                  <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                    <div>
+                      <h5 class="m-0"><%= item.item_name %></h5>
+                      <small class="text-muted">x<%= quantity %></small>
+                    </div>
+                    <div class="text-end">
+                      <span class="badge bg-danger">$<%= subtotal %></span>
+                      <%= button_to 'Remove one', remove_one_cart_path(item_id: item.id), method: :post, remote: true, class: 'btn btn-sm btn-outline-warning ms-2' %>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+              <div class="d-flex justify-content-between align-items-center">
+                <%= button_to 'Clear cart', clear_cart_path, method: :delete, remote: true, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>
+                <div>
+                  <strong>Total: </strong>$<%= total_price %>
+                </div>
+                <%= button_to 'Order', orders_path, method: :post, class: 'btn btn-success' %>
+              </div>
+            <% else %>
+              <p class="text-center text-muted">Your cart is empty</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
